@@ -3,6 +3,11 @@ export interface Position {
   col: number;
 }
 
+export interface Match<T> {
+  matched: T;
+  positions: Position[];
+}
+
 export interface Board<T> {
   width: number;
   height: number;
@@ -86,4 +91,13 @@ export function move<T>(
   board: Board<T>,
   first: Position,
   second: Position
-): MoveResult<T> {}
+): MoveResult<T> {
+
+  if (!canMove(board, first, second)) {
+    return {
+      board,
+      effects: [],
+    };
+  }
+}
+

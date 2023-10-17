@@ -3,9 +3,9 @@ import * as Board from './board'
 
 const equalPosition = (p: Position) => (q: Position) => p.row === q.row && p.col === q.col
 
-const toStringPosition = ({row, col}: Position) => `(${row}, ${col})`
+const toStringPosition = ({ row, col }: Position) => `(${row}, ${col})`
 const toStringPositions = (ps: Position[]) => `[${ps.map(toStringPosition).join(', ')}]`
-const toStringMatch = <T>({matched, positions}: Match<T>) => `${toStringPositions(positions)}: ${matched}`
+const toStringMatch = <T>({ matched, positions }: Match<T>) => `${toStringPositions(positions)}: ${matched}`
 
 export class Model<T> {
     private observers: Set<((b: Model<T>) => void)>
@@ -48,7 +48,7 @@ export class Model<T> {
             if (eff.kind === 'Match') {
                 this.addMessage(toStringMatch(eff.match))
             } else {
-                this._board = eff.board
+                // this._board = eff.board
                 this.notify()
             }
         })
