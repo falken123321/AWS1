@@ -83,6 +83,16 @@ export function matchCheck<T>(board: Board<T>, first: Position, second: Position
   }
 }
 
+export function invalidMovesCheck<T>(first: Position, second: Position): boolean {
+  //Sikre at man ikke kan lave moves på forskellige rows og cols
+  if (first.row !== second.row && first.col !== second.col) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
+
 export function canMove<T>(
   board: Board<T>,
   first: Position,
@@ -91,7 +101,9 @@ export function canMove<T>(
   if (
     (!isPositionWithinBoardBounds(board, first) ||
       !isPositionWithinBoardBounds(board, second)) ||
-    matchCheck(board, first, second).matched !== undefined
+    matchCheck(board, first, second).matched !== undefined || // Sikre man ikke må move en tile hvis ikke det resultere i et match
+    invalidMovesCheck(first, second)
+
   ) {
     return false;
   }
