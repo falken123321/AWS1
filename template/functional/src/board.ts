@@ -108,10 +108,8 @@ export function canMove<T>(
   second: Position
 ): boolean {
   if (
-    !isPositionWithinBoardBounds(board, first) ||
-    !isPositionWithinBoardBounds(board, second) ||
     matchCheck(board, first, second).matched !== undefined || // Sikre man ikke må move en tile hvis ikke det resultere i et match
-    invalidMovesCheck(first, second)
+    invalidMovesCheck(first, second) //Sikre at man ikke kan lave moves på forskellige rows og cols - aka skråt
   ) {
     return false;
   }
@@ -126,59 +124,66 @@ export function move<T>(
 ): MoveResult<T> {
   if (!canMove(board, first, second)) {
     return { board, effects: [] };
-  }
+  } else {
+    const effects: Effect<T>[] = [];
 
-  // Swap the tiles at the first and second positions
-  const temp = board.tiles[first.row * board.width + first.col];
-  board.tiles[first.row * board.width + first.col] =
-    board.tiles[second.row * board.width + second.col];
-  board.tiles[second.row * board.width + second.col] = temp;
+    const firstTile = board.tiles[first.row * board.width + first.col];
+    const secondTile = board.tiles[second.row * board.width + second.col];
 
-  const effects = refill(generator, board);
+    board.tiles[first.row * board.width + first.col] = secondTile;
+    board.tiles[second.row * board.width + second.col] = firstTile;
 
-  return { board, effects };
-}
-
-function isPositionWithinBoardBounds<T>(
-  board: Board<T>,
-  position: Position
-): boolean {
-  const isRowValid = position.row >= 0 && position.row < board.height;
-  const isColValid = position.col >= 0 && position.col < board.width;
-
-  return isRowValid && isColValid;
-}
-
-//Denne funktion virker måske  Cascading
-// registers if refilling brings new matches
-// iterates until there are no new matches
-function refill<T>(generator: Generator<T>, board: Board<T>): Effect<T>[] {
-  const effects: Effect<T>[] = [];
-  let foundMatch = true;
-  while (foundMatch) {
-    foundMatch = false;
-
+    //Check for matches
     const matches: Match<T>[] = [];
-
-    for (const match of matches) {
-      effects.push({
-        kind: "Match",
-        match: match,
-      });
-      for (const position of match.positions) {
-        board.tiles[position.row * board.width + position.col] =
-          undefined as any;
+    //Check horizontal matches
+    for (let row = 0; row < board.height; row++) {
+      let match: Match<T> = { matched: undefined, positions: [] };
+      for (let col = 0; col < board.width; col++) {
+        const position: Position = { row, col };
+        const tile = piece(board, position);
+        if (tile === match.matched) {
+          match.positions.push(position);
+        } else {
+          if (match.positions.length >= 3) {
+            matches.push(match);
+          }
+          match = { matched: tile, positions: [position] };
+        }
       }
-      foundMatch = true;
+      if (match.positions.length >= 3) {
+        matches.push(match);
+      }
     }
 
-    for (let i = 0; i < board.tiles.length; i++) {
-      if (board.tiles[i] === undefined) {
-        board.tiles[i] = generator.next();
-        effects.push({ kind: "Refill" });
+    //Check vertical matches
+    for (let col = 0; col < board.width; col++) {
+      let match: Match<T> = { matched: undefined, positions: [] };
+      for (let row = 0; row < board.height; row++) {
+        const position: Position = { row, col };
+        const tile = piece(board, position);
+        if (tile === match.matched) {
+          match.positions.push(position);
+        } else {
+          if (match.positions.length >= 3) {
+            matches.push(match);
+          }
+          match = { matched: tile, positions: [position] };
+        }
+      }
+      if (match.positions.length >= 3) {
+        matches.push(match);
       }
     }
+
+    if (matches.length > 0) {
+      for (let i = 0; i < matches.length; i++) {
+        effects.push({
+          kind: "Match",
+          match: matches[i],
+        });
+      }
+    }
+
+    return { board, effects: effects };
   }
-
-  return effects;
 }
