@@ -97,9 +97,5 @@ export function move<T>(
   if (!canMove(board, first, second)) {
     return { board, effects: [] };
   }
-
-  // Handle the case where the move is valid.
-  // This is just a placeholder. You'll need to add the logic to handle the valid move.
-  // For now, I'm just returning the original board with no effects.
   return { board, effects: [] };
 }
