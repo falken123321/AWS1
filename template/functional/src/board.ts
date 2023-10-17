@@ -69,16 +69,23 @@ export function canMove<T>(
   first: Position,
   second: Position
 ): boolean {
-  const canMoveOneStep =
-    (Math.abs(first.row - second.row) === 1 && first.col === second.col) ||
-    (Math.abs(first.col - second.col) === 1 && first.row === second.row);
-
-  if (canMoveOneStep) {
-    if (board[second.row][second.col] !== null) return false;
-    return true;
+  if (
+    !isPositionWithinBoardBounds(board, first) ||
+    !isPositionWithinBoardBounds(board, second)
+  ) {
+    return false;
   }
+  return true;
+}
 
-  return false;
+function isPositionWithinBoardBounds<T>(
+  board: Board<T>,
+  position: Position
+): boolean {
+  const isRowValid = position.row >= 0 && position.row < board.height;
+  const isColValid = position.col >= 0 && position.col < board.width;
+
+  return isRowValid && isColValid;
 }
 
 export function move<T>(
@@ -86,4 +93,13 @@ export function move<T>(
   board: Board<T>,
   first: Position,
   second: Position
-): MoveResult<T> {}
+): MoveResult<T> {
+  if (!canMove(board, first, second)) {
+    return { board, effects: [] };
+  }
+
+  // Handle the case where the move is valid.
+  // This is just a placeholder. You'll need to add the logic to handle the valid move.
+  // For now, I'm just returning the original board with no effects.
+  return { board, effects: [] };
+}

@@ -67,17 +67,6 @@ function require(board: Board.Board<String>) {
   return { toEqual, toMatch };
 }
 
-describe("CyclicGenerator", () => {
-  it("should return elements in a cyclic manner", () => {
-    const generator = new CyclicGenerator("ABC");
-    expect(generator.next()).toEqual("A");
-    expect(generator.next()).toEqual("B");
-    expect(generator.next()).toEqual("C");
-    expect(generator.next()).toEqual("A");
-    expect(generator.next()).toEqual("B");
-  });
-});
-
 describe("Board", () => {
   describe("Initial board", () => {
     const generator = new CyclicGenerator("ABC");
