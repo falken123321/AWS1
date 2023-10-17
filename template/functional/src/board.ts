@@ -3,6 +3,11 @@ export interface Position {
   col: number;
 }
 
+export interface Match<T> {
+  matched: T;
+  positions: Position[];
+}
+
 export interface Board<T> {
   width: number;
   height: number;
@@ -64,14 +69,29 @@ export function piece<T>(board: Board<T>, position: Position): T | undefined {
   return board.tiles[position.row * board.width + position.col];
 }
 
+export function matchCheck<T>(board: Board<T>, first: Position, second: Position): Match<T> {
+  if (board.tiles[first.row * board.width + first.col] === board.tiles[second.row * board.width + second.col]) {
+    return {
+      matched: board.tiles[first.row * board.width + first.col],
+      positions: [first, second],
+    };
+  } else {
+    return {
+      matched: undefined,
+      positions: [],
+    };
+  }
+}
+
 export function canMove<T>(
   board: Board<T>,
   first: Position,
   second: Position
 ): boolean {
   if (
-    !isPositionWithinBoardBounds(board, first) ||
-    !isPositionWithinBoardBounds(board, second)
+    (!isPositionWithinBoardBounds(board, first) ||
+      !isPositionWithinBoardBounds(board, second)) ||
+    matchCheck(board, first, second).matched !== undefined
   ) {
     return false;
   }
@@ -97,5 +117,6 @@ export function move<T>(
   if (!canMove(board, first, second)) {
     return { board, effects: [] };
   }
+
   return { board, effects: [] };
 }
