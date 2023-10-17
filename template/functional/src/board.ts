@@ -195,6 +195,9 @@ export function move<T>(
         });
       }
     }
+    if (matches.length > 0) {
+      effects.push({ kind: "Refill" });
+    }
 
     return { board, effects: effects };
   }
