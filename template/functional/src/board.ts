@@ -102,7 +102,7 @@ export function canMove<T>(
     (!isPositionWithinBoardBounds(board, first) ||
       !isPositionWithinBoardBounds(board, second)) ||
     matchCheck(board, first, second).matched !== undefined || // Sikre man ikke må move en tile hvis ikke det resultere i et match
-    invalidMovesCheck(first, second)
+    invalidMovesCheck(first, second) //Sikre at man ikke kan lave moves på forskellige rows og cols - aka skråt
 
   ) {
     return false;
@@ -128,7 +128,12 @@ export function move<T>(
 ): MoveResult<T> {
   if (!canMove(board, first, second)) {
     return { board, effects: [] };
-  }
+  } else {
+    const firstTile = board.tiles[first.row * board.width + first.col];
+    const secondTile = board.tiles[second.row * board.width + second.col];
 
-  return { board, effects: [] };
+    board.tiles[first.row * board.width + first.col] = secondTile;
+    board.tiles[second.row * board.width + second.col] = firstTile;
+    return { board, effects: [] };
+  }
 }
