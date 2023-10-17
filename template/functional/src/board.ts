@@ -129,11 +129,65 @@ export function move<T>(
   if (!canMove(board, first, second)) {
     return { board, effects: [] };
   } else {
+    const effects: Effect<T>[] = [];
+
     const firstTile = board.tiles[first.row * board.width + first.col];
     const secondTile = board.tiles[second.row * board.width + second.col];
 
     board.tiles[first.row * board.width + first.col] = secondTile;
     board.tiles[second.row * board.width + second.col] = firstTile;
-    return { board, effects: [] };
+
+    //Check for matches
+    const matches: Match<T>[] = [];
+    //Check horizontal matches
+    for (let row = 0; row < board.height; row++) {
+      let match: Match<T> = { matched: undefined, positions: [] };
+      for (let col = 0; col < board.width; col++) {
+        const position: Position = { row, col };
+        const tile = piece(board, position);
+        if (tile === match.matched) {
+          match.positions.push(position);
+        } else {
+          if (match.positions.length >= 3) {
+            matches.push(match);
+          }
+          match = { matched: tile, positions: [position] };
+        }
+      }
+      if (match.positions.length >= 3) {
+        matches.push(match);
+      }
+    }
+
+    //Check vertical matches
+    for (let col = 0; col < board.width; col++) {
+      let match: Match<T> = { matched: undefined, positions: [] };
+      for (let row = 0; row < board.height; row++) {
+        const position: Position = { row, col };
+        const tile = piece(board, position);
+        if (tile === match.matched) {
+          match.positions.push(position);
+        } else {
+          if (match.positions.length >= 3) {
+            matches.push(match);
+          }
+          match = { matched: tile, positions: [position] };
+        }
+      }
+      if (match.positions.length >= 3) {
+        matches.push(match);
+      }
+    }
+
+    if (matches.length > 0) {
+      for (let i = 0; i < matches.length; i++) {
+        effects.push({
+          kind: "Match",
+          match: matches[i],
+        });
+      }
+    }
+
+    return { board, effects: effects };
   }
 }
