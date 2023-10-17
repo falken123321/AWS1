@@ -108,12 +108,24 @@ export function canMove<T>(
   second: Position
 ): boolean {
   if (
+    !isPositionWithinBoardBounds(board, first) ||
+    !isPositionWithinBoardBounds(board, second) ||
     matchCheck(board, first, second).matched !== undefined || // Sikre man ikke må move en tile hvis ikke det resultere i et match
     invalidMovesCheck(first, second) //Sikre at man ikke kan lave moves på forskellige rows og cols - aka skråt
   ) {
     return false;
   }
   return true;
+}
+
+function isPositionWithinBoardBounds<T>(
+  board: Board<T>,
+  position: Position
+): boolean {
+  const isRowValid = position.row >= 0 && position.row < board.height;
+  const isColValid = position.col >= 0 && position.col < board.width;
+
+  return isRowValid && isColValid;
 }
 
 export function move<T>(
