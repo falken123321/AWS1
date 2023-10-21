@@ -39,20 +39,20 @@ export class View<T> {
         if (this.table === undefined) {
             this.board = []
             this.table = this.createChild(this.base, 'table') as HTMLTableElement
-            for(let i = 0; i < model.board.height; i++) {
+            for (let i = 0; i < model.board.height; i++) {
                 const row = this.createChild(this.table, 'tr')
                 const tds: HTMLElement[] = []
-                for(let j = 0; j < model.board.width; j++) {
+                for (let j = 0; j < model.board.width; j++) {
                     const cell = this.createChild(row, 'td')
                     tds.push(cell)
-                    cell.onclick = (_) => this.controller.click({row: i, col: j})
+                    cell.onclick = (_) => this.controller.click({ row: i, col: j })
                 }
                 this.board.push(tds)
             }
         }
         this.board.forEach((row, i) => {
             row.forEach((cell, j) => {
-                const position = {row: i, col: j}
+                const position = { row: i, col: j }
                 cell.innerText = piece(model.board, position).toString()
                 cell.style.background = model.isSelected(position) ? 'aqua' : 'white'
             })

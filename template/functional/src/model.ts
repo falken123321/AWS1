@@ -48,7 +48,7 @@ export class Model<T> {
             if (eff.kind === 'Match') {
                 this.addMessage(toStringMatch(eff.match))
             } else {
-                // this._board = eff.board
+                this._board = eff.board
                 this.notify()
             }
         })
