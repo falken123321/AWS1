@@ -19,6 +19,11 @@ export type BoardListener<T> = {
   (event: BoardEvent<T>): void;
 };
 
+//export type MoveResult<T> = {
+//board: Board<T>;
+//effects: BoardEvent < T > [];
+//};
+
 export class Board<T> {
   private generator: Generator<T>;
   private width: number;
